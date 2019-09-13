@@ -73,6 +73,10 @@ public class UserController
         todo.setUser(userService.findUserById(userid));
         todo = todoService.save(todo);
 
+        HttpHeaders responseHeaders = new HttpHeaders();
+        URI newUserURI = ServletUriComponentsBuilder.fromCurrentRequest().path("/{userid}").buildAndExpand(todo.getTodoid()).toUri();
+        responseHeaders.setLocation(newUserURI);
+
         return new ResponseEntity<>(todo,HttpStatus.CREATED);
     }
 
