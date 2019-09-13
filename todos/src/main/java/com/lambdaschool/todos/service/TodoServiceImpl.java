@@ -1,5 +1,60 @@
 package com.lambdaschool.todos.service;
 
-public class TodoServiceImpl
+import com.lambdaschool.todos.model.Todo;
+import com.lambdaschool.todos.repository.TodoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Service(value = "todoService")
+public class TodoServiceImpl implements TodoService
 {
+    @Autowired
+    private TodoRepository todorepos;
+
+    @Override
+    public List<Todo> findAll()
+    {
+       List<Todo> list = new ArrayList<>();
+       todorepos.findAll().iterator().forEachRemaining(list::add);
+       return list;
+    }
+
+    @Override
+    public Todo findTodoByName(String name)
+    {
+        return null;
+    }
+
+    @Override
+    public Todo findTodoById(long id)
+    {
+        return null;
+    }
+
+    @Override
+    public void delete(long id)
+    {
+
+    }
+
+    @Transactional
+    @Override
+    public Todo save(Todo todo)
+    {
+        Todo newTodo = new Todo();
+        newTodo.setDescription(todo.getDescription());
+        newTodo.setDatestarted(todo.getDatestarted());
+        newTodo.setUser(todo.getUser());
+        return todorepos.save(newTodo);
+    }
+
+    @Override
+    public Todo update(Todo todo, long id)
+    {
+        return null;
+    }
 }

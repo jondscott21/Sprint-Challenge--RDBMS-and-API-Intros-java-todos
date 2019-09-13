@@ -3,7 +3,7 @@ package com.lambdaschool.todos.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Date;
 
 @Entity
 @Table(name = "todos")
@@ -16,6 +16,7 @@ public class Todo extends Auditable
     @Column(nullable = false)
     private String description;
 
+    private Date datestarted;
     private boolean completed;
 
     @ManyToOne
@@ -27,10 +28,10 @@ public class Todo extends Auditable
     {
     }
 
-    public Todo(String description, boolean completed, User user)
+    public Todo(String description, Date datestarted, User user)
     {
         this.description = description;
-        this.completed = completed;
+        this.datestarted = datestarted;
         this.user = user;
     }
 
@@ -52,6 +53,16 @@ public class Todo extends Auditable
     public void setDescription(String description)
     {
         this.description = description;
+    }
+
+    public Date getDatestarted()
+    {
+        return datestarted;
+    }
+
+    public void setDatestarted(Date datestarted)
+    {
+        this.datestarted = datestarted;
     }
 
     public boolean isCompleted()

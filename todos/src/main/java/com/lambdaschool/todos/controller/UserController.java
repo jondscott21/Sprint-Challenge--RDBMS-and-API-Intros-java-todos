@@ -32,17 +32,16 @@ public class UserController
         return new ResponseEntity<>(myUsers, HttpStatus.OK);
     }
 
-    // GET localhost:2019/users/view/3
-    @GetMapping(value = "/view/{userId}", produces = {"application/json"})
-    public ResponseEntity<?> getUser(@PathVariable
-                                             Long userId)
+    @GetMapping(value = "/mine", produces = {"application/json"})
+    public ResponseEntity<?> getMyQuotes()
     {
-        User u = userService.findUserById(userId);
-        return new ResponseEntity<>(u, HttpStatus.OK);
+        User myQuotes = userService.findUserQuotes();
+        return new ResponseEntity<>(myQuotes, HttpStatus.OK);
     }
 
-    // POST localhost:2019/users/add
-    @PostMapping(value = "/add", consumes = {"application/json"}, produces = {"application/json"})
+
+    // POST localhost:2019/users
+    @PostMapping(value = "", consumes = {"application/json"}, produces = {"application/json"})
     public ResponseEntity<?> addNewUser(@Valid @RequestBody
                                                 User newuser) throws URISyntaxException
     {
@@ -70,13 +69,13 @@ public class UserController
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // DELETE localhost:2019/users/delete/3
+    // DELETE localhost:2019/users/userid/3
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/userid/{userid}")
     public ResponseEntity<?> deleteUserById(@PathVariable
-                                                    long id)
+                                                    long userid)
     {
-        userService.delete(id);
+        userService.delete(userid);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

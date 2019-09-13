@@ -8,6 +8,8 @@ public interface UserService {
 
     List<User> findAll();
 
+    User findUserQuotes();
+
     User findUserByName(String name);
 
     User findUserById(long id);

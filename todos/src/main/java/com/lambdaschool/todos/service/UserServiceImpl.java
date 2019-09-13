@@ -1,10 +1,12 @@
 package com.lambdaschool.todos.service;
 
+import com.lambdaschool.todos.model.Todo;
 import com.lambdaschool.todos.model.User;
 import com.lambdaschool.todos.model.UserRoles;
 import com.lambdaschool.todos.repository.RoleRepository;
 import com.lambdaschool.todos.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +28,8 @@ public class UserServiceImpl implements UserDetailsService, UserService
 
     @Autowired
     private RoleRepository rolerepos;
+
+    private Principal principal;
 
     @Transactional
     @Override
@@ -49,6 +54,20 @@ public class UserServiceImpl implements UserDetailsService, UserService
         List<User> list = new ArrayList<>();
         userrepos.findAll().iterator().forEachRemaining(list::add);
         return list;
+    }
+
+    @Override
+    public User findUserQuotes()
+    {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails) {
+            String username = ((UserDetails)principal).getUsername();
+            return userrepos.findByUsername(username);
+        } else {
+            String username = principal.toString();
+            return userrepos.findByUsername(username);
+        }
+
     }
 
     @Override
@@ -77,6 +96,11 @@ public class UserServiceImpl implements UserDetailsService, UserService
             newRoles.add(new UserRoles(newUser, ur.getRole()));
         }
         newUser.setUserRoles(newRoles);
+
+        for (Todo t : user.getTodos())
+        {
+            newUser.getTodos().add(new Todo(t.getDescription(), t.getDatestarted(), newUser));
+        }
 
         return userrepos.save(newUser);
     }
@@ -122,6 +146,14 @@ public class UserServiceImpl implements UserDetailsService, UserService
             for (UserRoles ur : user.getUserRoles())
             {
                 rolerepos.insertUserRoles(id, ur.getRole().getRoleid());
+            }
+        }
+
+        if (user.getTodos().size() > 0)
+        {
+            for (Todo t : user.getTodos())
+            {
+                currentUser.getTodos().add(new Todo(t.getDescription(), t.getDatestarted(), currentUser));
             }
         }
 
