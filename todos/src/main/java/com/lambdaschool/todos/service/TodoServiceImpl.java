@@ -1,7 +1,9 @@
 package com.lambdaschool.todos.service;
 
 import com.lambdaschool.todos.model.Todo;
+import com.lambdaschool.todos.model.User;
 import com.lambdaschool.todos.repository.TodoRepository;
+import com.lambdaschool.todos.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,12 +11,16 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+@Transactional
 @Service(value = "todoService")
 public class TodoServiceImpl implements TodoService
 {
+
     @Autowired
     private TodoRepository todorepos;
+    private UserRepository userrepos;
 
     @Override
     public List<Todo> findAll()
@@ -46,11 +52,7 @@ public class TodoServiceImpl implements TodoService
     @Override
     public Todo save(Todo todo)
     {
-        Todo newTodo = new Todo();
-        newTodo.setDescription(todo.getDescription());
-        newTodo.setDatestarted(todo.getDatestarted());
-        newTodo.setUser(todo.getUser());
-        return todorepos.save(newTodo);
+        return todorepos.save(todo);
     }
 
     @Override
@@ -61,13 +63,17 @@ public class TodoServiceImpl implements TodoService
         {
             currentTodo.setDescription(todo.getDescription());
         }
-        if (todo.getDescription() != null)
+        if (todo.getDatestarted() != null)
         {
             currentTodo.setDatestarted(todo.getDatestarted());
         }
-        if (todo.getDescription() != null)
+        if (todo.getUser() != null)
         {
             currentTodo.setUser(todo.getUser());
+        }
+        if (todo.isCompleted() != currentTodo.isCompleted())
+        {
+            currentTodo.setCompleted(todo.isCompleted());
         }
         return todorepos.save(currentTodo);
     }

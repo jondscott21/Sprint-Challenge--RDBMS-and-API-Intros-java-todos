@@ -43,7 +43,6 @@ public class UserServiceImpl implements UserDetailsService, UserService
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), user.getAuthority());
     }
 
-    @Transactional
     public User findUserById(long id) throws EntityNotFoundException
     {
         return userrepos.findById(id).orElseThrow(() -> new EntityNotFoundException(Long.toString(id)));
@@ -62,7 +61,9 @@ public class UserServiceImpl implements UserDetailsService, UserService
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof UserDetails) {
             String username = ((UserDetails)principal).getUsername();
-            return userrepos.findByUsername(username);
+            User u = userrepos.findByUsername(username);
+            System.out.println(u.getUserRoles());
+            return u;
         } else {
             String username = principal.toString();
             return userrepos.findByUsername(username);
@@ -127,11 +128,13 @@ public class UserServiceImpl implements UserDetailsService, UserService
 
         if (user.getUsername() != null)
         {
+            System.out.println(currentUser.getUserRoles());
             currentUser.setUsername(user.getUsername());
         }
 
         if (user.getPassword() != null)
         {
+            System.out.println(currentUser.getUserRoles());
             currentUser.setPasswordNoEncrypt(user.getPassword());
         }
 

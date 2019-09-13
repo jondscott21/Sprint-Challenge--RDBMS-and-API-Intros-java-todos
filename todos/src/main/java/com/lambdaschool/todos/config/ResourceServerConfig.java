@@ -31,9 +31,12 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter
                         "/swagger-ui.html",
                         "/v2/api-docs",
                         "/webjars/**").permitAll()
-                .antMatchers("/users/**", "/todos/**").authenticated()
+                .antMatchers("/users/**", "/todos/").authenticated()
                 .antMatchers("/users").hasAnyRole("ADMIN")
-                .antMatchers("/users/userid/**").hasAnyRole("ADMIN")
+                .antMatchers("/users/mine").hasAnyRole("ADMIN", "USER")
+                .antMatchers("/users/todo/{userid}").hasAnyRole("ADMIN", "USER")
+                .antMatchers("/todos/todoid/{todoid}").hasAnyRole("ADMIN", "USER")
+                .antMatchers("/users/userid/{userid}").hasAnyRole("ADMIN")
                 .and().exceptionHandling().accessDeniedHandler(new OAuth2AccessDeniedHandler());
         http.csrf().disable();
         http.headers().frameOptions().disable();

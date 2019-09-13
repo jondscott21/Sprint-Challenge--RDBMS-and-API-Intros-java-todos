@@ -25,6 +25,7 @@ public class UserController
 
     @Autowired
     private UserService userService;
+    @Autowired
     private TodoService todoService;
 
     // GET localhost:2019/users/viewall
@@ -44,6 +45,7 @@ public class UserController
 
 
     // POST localhost:2019/users
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     @PostMapping(value = "", consumes = {"application/json"}, produces = {"application/json"})
     public ResponseEntity<?> addNewUser(@Valid @RequestBody
                                                 User newuser) throws URISyntaxException
@@ -63,23 +65,17 @@ public class UserController
     }
 
 
-    @PostMapping(value = "/todo/{userid}", consumes = {"application/json"}, produces = {"application/json"})
-    public ResponseEntity<?> addNewTodo(@Valid @RequestBody
-                                                Todo newtodo, @PathVariable long userid) throws URISyntaxException
-    {
-        newtodo =  todoService.save(newtodo);
 
-        // set the location header for the newly created resource
-        HttpHeaders responseHeaders = new HttpHeaders();
-        URI newUserURI = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{userid}")
-                .buildAndExpand(newtodo.getUser().getUserid())
-                .toUri();
-        responseHeaders.setLocation(newUserURI);
+    /* POST localhost:2019/users/todo/{userid} */
+    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @PostMapping(value="/todo/{userid}", consumes = {"application/json"}, produces = {"application/json"})
+    public ResponseEntity<?> addTodo(@Valid @RequestBody Todo todo, @PathVariable long userid){
+        todo.setUser(userService.findUserById(userid));
+        todo = todoService.save(todo);
 
-        return new ResponseEntity<>(null, responseHeaders, HttpStatus.CREATED);
+        return new ResponseEntity<>(todo,HttpStatus.CREATED);
     }
+
     // PUT localhost:2019/users/user/3
     @PutMapping(value = "/user/{id}")
     public ResponseEntity<?> updateUser(@RequestBody
