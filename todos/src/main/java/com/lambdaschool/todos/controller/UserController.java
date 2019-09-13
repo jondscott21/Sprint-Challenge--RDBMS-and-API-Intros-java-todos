@@ -1,7 +1,9 @@
 package com.lambdaschool.todos.controller;
 
 
+import com.lambdaschool.todos.model.Todo;
 import com.lambdaschool.todos.model.User;
+import com.lambdaschool.todos.service.TodoService;
 import com.lambdaschool.todos.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +25,7 @@ public class UserController
 
     @Autowired
     private UserService userService;
+    private TodoService todoService;
 
     // GET localhost:2019/users/viewall
     @GetMapping(value = "/viewall", produces = {"application/json"})
@@ -59,6 +62,24 @@ public class UserController
         return new ResponseEntity<>(null, responseHeaders, HttpStatus.CREATED);
     }
 
+
+    @PostMapping(value = "/todo/{userid}", consumes = {"application/json"}, produces = {"application/json"})
+    public ResponseEntity<?> addNewTodo(@Valid @RequestBody
+                                                Todo newtodo, @PathVariable long userid) throws URISyntaxException
+    {
+        newtodo =  todoService.save(newtodo);
+
+        // set the location header for the newly created resource
+        HttpHeaders responseHeaders = new HttpHeaders();
+        URI newUserURI = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{userid}")
+                .buildAndExpand(newtodo.getUser().getUserid())
+                .toUri();
+        responseHeaders.setLocation(newUserURI);
+
+        return new ResponseEntity<>(null, responseHeaders, HttpStatus.CREATED);
+    }
     // PUT localhost:2019/users/user/3
     @PutMapping(value = "/user/{id}")
     public ResponseEntity<?> updateUser(@RequestBody

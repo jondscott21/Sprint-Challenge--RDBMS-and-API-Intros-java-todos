@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,6 +56,19 @@ public class TodoServiceImpl implements TodoService
     @Override
     public Todo update(Todo todo, long id)
     {
-        return null;
+        Todo currentTodo = todorepos.findById(id).orElseThrow(() -> new EntityNotFoundException(Long.toString(id)));
+        if (todo.getDescription() != null)
+        {
+            currentTodo.setDescription(todo.getDescription());
+        }
+        if (todo.getDescription() != null)
+        {
+            currentTodo.setDatestarted(todo.getDatestarted());
+        }
+        if (todo.getDescription() != null)
+        {
+            currentTodo.setUser(todo.getUser());
+        }
+        return todorepos.save(currentTodo);
     }
 }
